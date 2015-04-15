@@ -22,7 +22,14 @@ class ParallaxScrolling: SKSpriteNode {
         case Right
     }
     
-    init?(backgroundImages:[UIImage], size:CGSize, scrollingDirection:ScrollingDirection, fastestSpeed:CGFloat, speedDecrease:CGFloat) {
+    /**
+    Initialize the parralax node.
+    
+    :param: backgroundImages [UIImage] of images (one image per layer). The order of the images in the array will also be the order the layers are added to the parallax node (from nearest to furthest)
+    :param: startingSpeed CGFloat indicating the speed of the nearest layer
+    :param: speedDecreaseFactor CGFloat indicating the speed decrease factor
+    */
+    init?(backgroundImages:[UIImage], size:CGSize, scrollingDirection:ScrollingDirection, startingSpeed:CGFloat, speedDecreaseFactor:CGFloat) {
         self.backgrounds = []
         self.clonedBackgrounds = []
         self.speeds = []
@@ -31,7 +38,7 @@ class ParallaxScrolling: SKSpriteNode {
         super.init(texture: nil, color:UIColor.clearColor(), size: size)
         
         let zPos = 1.0 / CGFloat(numberOfBackgrounds)
-        var currentSpeed = fastestSpeed
+        var currentSpeed = startingSpeed
         self.position = CGPointMake(self.size.width/2, self.size.height/2)
         self.zPosition = -100
     
@@ -59,55 +66,55 @@ class ParallaxScrolling: SKSpriteNode {
             clonedBackgrounds.append(clonedNode)
             speeds.append(currentSpeed)
             
-            currentSpeed = currentSpeed / (1 + speedDecrease)
+            currentSpeed = currentSpeed / speedDecreaseFactor
             
             self.addChild(node)
             self.addChild(clonedNode)
         }
     }
     
-    func update(currentTime:NSTimeInterval) {
+    /**
+    Change the position of the backgrounds based on the scrolling direction.
+    */
+    func update() {
         for i in 0..<numberOfBackgrounds{
-            // determine the speed of each node
             var speed = self.speeds[i]
-    
-            // adjust positions
-            var bg = self.backgrounds[i]
-            var cBg = self.clonedBackgrounds[i]
+
+            var background = self.backgrounds[i]
+            var clonedBackground = self.clonedBackgrounds[i]
         
-            var newBgX = bg.position.x
-            var newBgY = bg.position.y
-            var newCbgX = cBg.position.x
-            var newCbgY = cBg.position.y
+            var adjustedBackgroundX = background.position.x
+            var adjustedBackgroundY = background.position.y
+            var adjustedClonedBackgroundX = clonedBackground.position.x
+            var adjustedClonedBackgroundY = clonedBackground.position.y
             
-            // position depends on direction.
             switch (self.scrollingDirection) {
             case .Right:
-                newBgX += speed
-                newCbgX += speed
-                if (newBgX >= bg.size.width) {
-                    newBgX = newBgX - 2 * bg.size.width + antiFlickering
+                adjustedBackgroundX += speed
+                adjustedClonedBackgroundX += speed
+                if (adjustedBackgroundX >= background.size.width) {
+                    adjustedBackgroundX = adjustedBackgroundX - 2 * background.size.width + antiFlickering
                 }
-                if (newCbgX >= cBg.size.width) {
-                    newCbgX = newCbgX - 2 * cBg.size.width + antiFlickering
+                if (adjustedClonedBackgroundX >= clonedBackground.size.width) {
+                    adjustedClonedBackgroundX = adjustedClonedBackgroundX - 2 * clonedBackground.size.width + antiFlickering
                 }
             case .Left:
-                newBgX -= speed
-                newCbgX -= speed
+                adjustedBackgroundX -= speed
+                adjustedClonedBackgroundX -= speed
 
-                if (newBgX <= -self.size.width) {
-                    newBgX = newBgX + 2 * self.size.width - antiFlickering
+                if (adjustedBackgroundX <= -self.size.width) {
+                    adjustedBackgroundX = adjustedBackgroundX + 2 * self.size.width - antiFlickering
                 }
-                if (newCbgX <= -self.size.width) {
-                    newCbgX = newCbgX + 2 * self.size.width - antiFlickering
+                if (adjustedClonedBackgroundX <= -self.size.width) {
+                    adjustedClonedBackgroundX = adjustedClonedBackgroundX + 2 * self.size.width - antiFlickering
                 }
             default:
                 break
             }
     
             // update positions with the right coordinates.
-            bg.position = CGPointMake(newBgX, newBgY)
-            cBg.position = CGPointMake(newCbgX, newCbgY)
+            background.position = CGPointMake(adjustedBackgroundX, adjustedBackgroundY)
+            clonedBackground.position = CGPointMake(adjustedClonedBackgroundX, adjustedClonedBackgroundY)
         }
     }
     

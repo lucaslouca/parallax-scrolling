@@ -12,13 +12,18 @@ class GameScene: SKScene {
     var parallaxBackground:ParallaxScrolling
     
     init(size: CGSize, scrollingDirection:ParallaxScrolling.ScrollingDirection) {
+        // Get images for each layer
         var images: [UIImage] = [UIImage(named: "ground")!, UIImage(named: "mountains")!, UIImage(named: "clouds")!]
         
-        self.parallaxBackground = ParallaxScrolling(backgroundImages: images, size: size, scrollingDirection: scrollingDirection, fastestSpeed: CGFloat(2.0), speedDecrease: CGFloat(1.0))!
+        // Create a parallax background node
+        self.parallaxBackground = ParallaxScrolling(backgroundImages: images, size: size, scrollingDirection: scrollingDirection, startingSpeed: CGFloat(2.0), speedDecreaseFactor: CGFloat(2.0))!
         
         super.init(size: size)
         
+        // Add the parallax background to the scene
         self.addChild(parallaxBackground)
+        
+        // Add Wario to the scene
         addCharacter()
     }
     
@@ -36,11 +41,13 @@ class GameScene: SKScene {
     
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
-        parallaxBackground.update(currentTime)
+        parallaxBackground.update()
         
     }
     
-    
+    /**
+    Add our Wario character to the screen
+    */
     func addCharacter() {
         var textures:[SKTexture] = []
         for i in 1...11 {
