@@ -43,33 +43,34 @@ class ParallaxScrolling: SKSpriteNode {
         self.zPosition = -100
     
         for (index, image) in enumerate(backgroundImages) {
-            let node = SKSpriteNode(texture: SKTexture(CGImage: image.CGImage), size:size)
+            let background = SKSpriteNode(texture: SKTexture(CGImage: image.CGImage), size:size)
 
-            node.zPosition = self.zPosition - (zPos + (zPos * CGFloat(index)))
-            node.position = CGPointMake(0, 0)
-            let clonedNode = node.copy() as! SKSpriteNode
-            var clonedPosX = node.position.x
-            var clonedPosY = node.position.y
+            background.zPosition = self.zPosition - (zPos + (zPos * CGFloat(index)))
+            background.position = CGPointMake(0, 0)
+            let clonedBackground = background.copy() as! SKSpriteNode
+            var clonedBackgroundX = background.position.x
+            var clonedBackgroundY = background.position.y
             
             switch (scrollingDirection) {
             case .Right:
-                clonedPosX = -node.size.width
+                clonedBackgroundX = -background.size.width
             case .Left:
-                clonedPosX = node.size.width
+                clonedBackgroundX = background.size.width
             default:
                 break
             }
 
-            clonedNode.position = CGPointMake(clonedPosX, clonedPosY);
-
-            backgrounds.append(node)
-            clonedBackgrounds.append(clonedNode)
+            clonedBackground.position = CGPointMake(clonedBackgroundX, clonedBackgroundY);
+            backgrounds.append(background)
+            clonedBackgrounds.append(clonedBackground)
             speeds.append(currentSpeed)
             
+            // Decrease speed
             currentSpeed = currentSpeed / speedDecreaseFactor
             
-            self.addChild(node)
-            self.addChild(clonedNode)
+            // Add backgrounds as childs to this node
+            self.addChild(background)
+            self.addChild(clonedBackground)
         }
     }
     
